@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixMyStreet - Pothole Cases</title>
+</head>
+<body>
+    <!-- const ngrokUrl = 'https://7600-45-112-146-167.ngrok-free.app/getAllCases'; -->
+    <h1>List of Potholes</h1>
+    <div id="potholes"></div>
+
+    <script>
+        async function fetchPotholes() {
+            const ngrokUrl = 'https://72bf-2409-40f2-304a-5ce4-d9be-e1cd-2691-35dc.ngrok-free.app/getAllCases';
+    
+            try {
+                const response = await fetch(ngrokUrl, {
+                    method: 'GET',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok. Status: ${response.status}`);
+                }
+    
+                const potholes = await response.json();
+                console.log(potholes); 
+    
+                const potholesContainer = document.getElementById('potholes');
+                potholesContainer.innerHTML = '';
+    
+                potholes.forEach(pothole => {
+                    const potholeDiv = document.createElement('div');
+                    potholeDiv.style.border = '1px solid black';
+                    potholeDiv.style.margin = '10px';
+                    potholeDiv.style.padding = '10px';
+    
+                    
+                    if (pothole.image) {
+                        
+                        const img = document.createElement('img');
+                        img.alt = 'Pothole image';
+                        img.style.width = '300px'; 
+                        
+                        
+                        img.src = pothole.image; 
+    
+                        potholeDiv.appendChild(img);
+                    } else {
+                        potholeDiv.innerHTML += '<p>Error loading image</p>';
+                    }
+    
+                    potholeDiv.innerHTML += `<p>Address: ${pothole.address}</p>`;
+                    potholeDiv.innerHTML += `<p>Latitude: ${pothole.latitude}</p>`;
+                    potholeDiv.innerHTML += `<p>Longitude: ${pothole.longitude}</p>`;
+                    potholeDiv.innerHTML += `<p>Submitted By: ${pothole.submittedBy}</p>`;
+                    potholeDiv.innerHTML += `<p>Resolved: ${pothole.resolved ? 'Yes' : 'No'}</p>`;
+    
+                    potholesContainer.appendChild(potholeDiv);
+                });
+            } catch (error) {
+                console.error('Error loading potholes:', error);
+                document.getElementById('potholes').innerHTML = `<p>Error loading potholes: ${error.message}</p>`;
+            }
+        }
+    
+        fetchPotholes();
+    </script>
+    
+</body>
+</html>
